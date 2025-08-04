@@ -40,6 +40,42 @@ export default function TimelineList({
     return matchesSearch && matchesGrade && matchesSurface && matchesPhase && matchesDistance;
   });
 
+  // Check if any filters are active
+  const hasActiveFilters = filters.searchTerm !== '' ||
+    filters.grade !== 'All' ||
+    filters.surface !== 'All' ||
+    filters.careerPhase !== 'All' ||
+    filters.distance !== 'All';
+
+  // Generate all possible time slots
+  const generateAllTimeSlots = () => {
+    const allSlots: { careerPhase: string; month: number; half: string; races: Race[] }[] = [];
+    const careerPhases = ['Junior', 'Classic', 'Senior'];
+    const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    const halves = ['Early', 'Late'];
+
+    careerPhases.forEach(phase => {
+      months.forEach(month => {
+        halves.forEach(half => {
+          const racesInSlot = filteredRaces.filter(race =>
+            race.careerPhase === phase &&
+            race.month === month &&
+            race.half === half
+          );
+
+          allSlots.push({
+            careerPhase: phase,
+            month,
+            half,
+            races: racesInSlot
+          });
+        });
+      });
+    });
+
+    return allSlots;
+  };
+
   // Group races by career phase, month, and half
   const groupedRaces = filteredRaces.reduce((acc, race) => {
     const key = `${race.careerPhase}-${race.month}-${race.half}`;
@@ -55,8 +91,11 @@ export default function TimelineList({
     return acc;
   }, {} as Record<string, { careerPhase: string; month: number; half: string; races: Race[] }>);
 
+  // Use either all time slots or filtered groups based on filter state
+  const timeSlots = hasActiveFilters ? Object.values(groupedRaces) : generateAllTimeSlots();
+
   // Sort the groups chronologically
-  const sortedGroups = Object.values(groupedRaces).sort((a, b) => {
+  const sortedGroups = timeSlots.sort((a, b) => {
     const phaseOrder = { Junior: 0, Classic: 1, Senior: 2 };
     const halfOrder = { Early: 0, Late: 1 };
 
@@ -100,7 +139,7 @@ export default function TimelineList({
   };
 
   return (
-    <div className="flex-1 overflow-auto scrollbar-thin bg-gradient-to-br from-surface-secondary to-background">
+    <div className="h-full overflow-y-auto scrollbar-thin bg-gradient-to-br from-surface-secondary to-background">
       <div className="max-w-7xl mx-auto">
         {sortedGroups.map((group) => (
           <div key={`${group.careerPhase}-${group.month}-${group.half}`} className="border-b border-border-light last:border-b-0">

@@ -170,9 +170,9 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-surface-secondary to-background flex flex-col" onMouseMove={handleMouseMove}>
+    <div className="h-screen bg-gradient-to-br from-background via-surface-secondary to-background flex flex-col overflow-hidden" onMouseMove={handleMouseMove}>
       {/* Updated Header to match reference design */}
-      <header className="border-b border-slate-700 bg-slate-900 shadow-sm backdrop-blur-sm">
+      <header className="border-b border-slate-700 bg-slate-900 shadow-sm backdrop-blur-sm flex-shrink-0">
         <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 md:py-3 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -180,7 +180,7 @@ export default function Home() {
                 <Calendar className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-white">Uma Race Planner</h1>
+                <h1 className="text-3xl font-bold text-white">Umamusume Race Planner</h1>
               </div>
             </div>
 
@@ -197,24 +197,28 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Filter Bar */}
-      <FilterBar
-        filters={planState.filters}
-        onFiltersChange={handleFiltersChange}
-      />
-
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Timeline List */}
-        <TimelineList
-          races={raceData}
-          selectedRaces={planState.selectedRaces}
+      {/* Filter Bar - Fixed */}
+      <div className="flex-shrink-0">
+        <FilterBar
           filters={planState.filters}
-          onRaceToggle={handleRaceToggle}
-          onRaceHover={handleRaceHover}
+          onFiltersChange={handleFiltersChange}
         />
+      </div>
 
-        {/* Plan Sidebar */}
+      {/* Main Content - Scrollable Timeline Area */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Timeline List - This is the only scrollable area */}
+        <div className="flex-1 overflow-hidden">
+          <TimelineList
+            races={raceData}
+            selectedRaces={planState.selectedRaces}
+            filters={planState.filters}
+            onRaceToggle={handleRaceToggle}
+            onRaceHover={handleRaceHover}
+          />
+        </div>
+
+        {/* Plan Sidebar - Fixed */}
         <PlanSidebar
           selectedRaces={planState.selectedRaces}
           isOpen={sidebarOpen}
