@@ -1,103 +1,193 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import FilterBar from './components/FilterBar';
+import TimelineList from './components/TimelineList';
+import PlanSidebar from './components/PlanSidebar';
+import RacePreview from './components/RacePreview';
+import { Race, SelectedRace, Filters, PlanState } from './types';
+import { raceData } from './data';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [planState, setPlanState] = useState<PlanState>({
+    selectedRaces: [],
+    filters: {
+      distance: 'All',
+      grade: 'All',
+      surface: 'All',
+      careerPhase: 'All',
+      searchTerm: ''
+    }
+  });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [hoveredRace, setHoveredRace] = useState<Race | null>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // Load plan from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('umamusume-race-plan');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setPlanState(parsed);
+      } catch (error) {
+        console.error('Error loading saved plan:', error);
+      }
+    }
+
+    // Load plan from URL if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedPlan = urlParams.get('plan');
+    if (sharedPlan) {
+      try {
+        const decoded = JSON.parse(atob(sharedPlan));
+        setPlanState(decoded);
+      } catch (error) {
+        console.error('Error loading shared plan:', error);
+      }
+    }
+  }, []);
+
+  // Save plan to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('umamusume-race-plan', JSON.stringify(planState));
+  }, [planState]);
+
+  const handleFiltersChange = (newFilters: Filters) => {
+    setPlanState(prev => ({ ...prev, filters: newFilters }));
+  };
+
+  const handleRaceToggle = (race: Race) => {
+    setPlanState(prev => {
+      const isSelected = prev.selectedRaces.some(selected => selected.id === race.id);
+
+      if (isSelected) {
+        // Remove race and update sequence numbers
+        const newSelected = prev.selectedRaces
+          .filter(selected => selected.id !== race.id)
+          .map((race, index) => ({ ...race, sequenceNumber: index + 1 }));
+
+        return { ...prev, selectedRaces: newSelected };
+      } else {
+        // Add race with next sequence number
+        const newSelected = [...prev.selectedRaces, {
+          ...race,
+          sequenceNumber: prev.selectedRaces.length + 1
+        }];
+
+        return { ...prev, selectedRaces: newSelected };
+      }
+    });
+  };
+
+  const handleRemoveRace = (raceId: string) => {
+    setPlanState(prev => {
+      const newSelected = prev.selectedRaces
+        .filter(race => race.id !== raceId)
+        .map((race, index) => ({ ...race, sequenceNumber: index + 1 }));
+
+      return { ...prev, selectedRaces: newSelected };
+    });
+  };
+
+  const handleReorderRaces = (newRaces: SelectedRace[]) => {
+    setPlanState(prev => ({ ...prev, selectedRaces: newRaces }));
+  };
+
+  const handleSavePlan = () => {
+    // Already auto-saved to localStorage
+    alert('Plan saved successfully!');
+  };
+
+  const handleClearPlan = () => {
+    if (confirm('Are you sure you want to clear your entire race plan?')) {
+      setPlanState(prev => ({ ...prev, selectedRaces: [] }));
+    }
+  };
+
+  const handleSharePlan = () => {
+    const encoded = btoa(JSON.stringify(planState));
+    const url = `${window.location.origin}${window.location.pathname}?plan=${encoded}`;
+
+    navigator.clipboard.writeText(url).then(() => {
+      alert('Plan URL copied to clipboard!');
+    }).catch(() => {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert('Plan URL copied to clipboard!');
+    });
+  };
+
+  const handleRaceHover = useCallback((race: Race | null) => {
+    setHoveredRace(race);
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col" onMouseMove={handleMouseMove}>
+      {/* Header */}
+      <header className="bg-surface shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="text-2xl">🏇</div>
+              <div>
+                <h1 className="text-2xl font-bold text-text-primary">Umamusume Race Planner</h1>
+                <p className="text-sm text-gray-600">Plan your 3-year racing career</p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Plan ({planState.selectedRaces.length})
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </header>
+
+      {/* Filter Bar */}
+      <FilterBar
+        filters={planState.filters}
+        onFiltersChange={handleFiltersChange}
+      />
+
+      {/* Main Content */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Timeline List */}
+        <TimelineList
+          races={raceData}
+          selectedRaces={planState.selectedRaces}
+          filters={planState.filters}
+          onRaceToggle={handleRaceToggle}
+          onRaceHover={handleRaceHover}
+        />
+
+        {/* Plan Sidebar */}
+        <PlanSidebar
+          selectedRaces={planState.selectedRaces}
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          onRemoveRace={handleRemoveRace}
+          onReorderRaces={handleReorderRaces}
+          onSavePlan={handleSavePlan}
+          onClearPlan={handleClearPlan}
+          onSharePlan={handleSharePlan}
+        />
+      </div>
+
+      {/* Race Preview */}
+      <RacePreview race={hoveredRace} position={mousePosition} />
     </div>
   );
 }

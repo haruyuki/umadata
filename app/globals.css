@@ -1,26 +1,75 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F5F7FA;
+  --foreground: #2A3E5C;
+
+  /* Umamusume Color Palette */
+  --uma-pink: #E27EA6;
+  --uma-gold: #FFD369;
+  --uma-navy: #2A3E5C;
+  --uma-teal: #3CCFCF;
+  --uma-light-bg: #F5F7FA;
+  --uma-white: #FFFFFF;
+
+  /* Semantic colors */
+  --primary: var(--uma-pink);
+  --secondary: var(--uma-gold);
+  --accent: var(--uma-teal);
+  --text-primary: var(--uma-navy);
+  --surface: var(--uma-white);
+  --surface-secondary: var(--uma-light-bg);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-surface: var(--surface);
+  --color-surface-secondary: var(--surface-secondary);
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1a1a2e;
+    --foreground: #eee;
+    --uma-pink: #c85e8a;
+    --uma-gold: #d4b655;
+    --uma-navy: #eee;
+    --uma-teal: #2a9b9b;
+    --uma-light-bg: #16213e;
+    --uma-white: #2a2a4a;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* Custom scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: var(--surface-secondary);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Smooth transitions */
+* {
+  transition: colors 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
