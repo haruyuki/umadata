@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import { Calendar } from 'lucide-react';
 import FilterBar from './components/FilterBar';
 import TimelineList from './components/TimelineList';
 import PlanSidebar from './components/PlanSidebar';
@@ -82,14 +84,12 @@ export default function Home() {
       const isSelected = prev.selectedRaces.some(selected => selected.id === race.id);
 
       if (isSelected) {
-        // Remove race and update sequence numbers
         const newSelected = prev.selectedRaces
           .filter(selected => selected.id !== race.id)
           .map((race, index) => ({ ...race, sequenceNumber: index + 1 }));
 
         return { ...prev, selectedRaces: newSelected };
       } else {
-        // Add race with next sequence number
         const newSelected = [...prev.selectedRaces, {
           ...race,
           sequenceNumber: prev.selectedRaces.length + 1
@@ -115,8 +115,6 @@ export default function Home() {
   };
 
   const handleSavePlan = () => {
-    // Already auto-saved to localStorage
-    // Show modern toast notification
     const toast = document.createElement('div');
     toast.className = 'fixed top-4 right-4 z-50 bg-success text-white px-6 py-3 rounded-xl shadow-lg';
     toast.textContent = '✅ Plan saved successfully!';
@@ -135,14 +133,12 @@ export default function Home() {
     const url = `${window.location.origin}${window.location.pathname}?plan=${encoded}`;
 
     navigator.clipboard.writeText(url).then(() => {
-      // Show modern toast notification
       const toast = document.createElement('div');
       toast.className = 'fixed top-4 right-4 z-50 bg-accent text-white px-6 py-3 rounded-xl shadow-lg';
       toast.textContent = '🔗 Plan URL copied to clipboard!';
       document.body.appendChild(toast);
       setTimeout(() => document.body.removeChild(toast), 3000);
     }).catch(() => {
-      // Fallback for older browsers
       const textArea = document.createElement('textarea');
       textArea.value = url;
       document.body.appendChild(textArea);
@@ -175,20 +171,16 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-surface-secondary to-background flex flex-col" onMouseMove={handleMouseMove}>
-      {/* Modern Header */}
-      <header className="glass card-shadow-lg border-0 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/5 to-secondary/10"></div>
-        <div className="relative max-w-7xl mx-auto px-6 py-6">
+      {/* Updated Header to match reference design */}
+      <header className="border-b border-slate-700 bg-slate-900 shadow-sm backdrop-blur-sm">
+        <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 md:py-3 lg:px-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg">
-                🏇
+            <div className="flex items-center space-x-3">
+              <div className="rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 p-3 shadow-lg">
+                <Calendar className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-text-primary bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  Uma Race Planner
-                </h1>
-                <p className="text-text-secondary font-medium">Plan your 3-year racing career with style</p>
+                <h1 className="text-3xl font-bold text-white">Uma Race Planner</h1>
               </div>
             </div>
 
