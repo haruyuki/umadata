@@ -24,71 +24,109 @@ export default function FilterBar({ filters, onFiltersChange }: FilterBarProps) 
   };
 
   return (
-    <div className="bg-surface border-b border-gray-200 p-4 shadow-sm">
-      <div className="max-w-7xl mx-auto">
+    <div className="glass card-shadow-lg border-0 sticky top-0 z-30">
+      <div className="max-w-7xl mx-auto p-6">
         <div className="flex flex-wrap gap-4 items-center">
           {/* Search */}
-          <div className="flex-1 min-w-[200px]">
+          <div className="flex-1 min-w-[250px] relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
             <input
               type="text"
               placeholder="Search races..."
               value={filters.searchTerm}
               onChange={(e) => updateFilter('searchTerm', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 bg-surface border border-border rounded-xl focus-modern text-text-primary placeholder-text-muted font-medium"
             />
           </div>
 
           {/* Career Phase Filter */}
-          <select
-            value={filters.careerPhase}
-            onChange={(e) => updateFilter('careerPhase', e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          >
-            <option value="All">All Phases</option>
-            {careerPhases.map(phase => (
-              <option key={phase} value={phase}>{phase}</option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={filters.careerPhase}
+              onChange={(e) => updateFilter('careerPhase', e.target.value)}
+              className="appearance-none bg-surface border border-border rounded-xl px-4 py-3 pr-10 focus-modern text-text-primary font-medium cursor-pointer hover:bg-surface-hover"
+            >
+              <option value="All">All Phases</option>
+              {careerPhases.map(phase => (
+                <option key={phase} value={phase}>{phase}</option>
+              ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg className="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
 
           {/* Grade Filter */}
-          <select
-            value={filters.grade}
-            onChange={(e) => updateFilter('grade', e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          >
-            {gradeOptions.map(grade => (
-              <option key={grade} value={grade}>{grade === 'All' ? 'All Grades' : grade}</option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={filters.grade}
+              onChange={(e) => updateFilter('grade', e.target.value)}
+              className="appearance-none bg-surface border border-border rounded-xl px-4 py-3 pr-10 focus-modern text-text-primary font-medium cursor-pointer hover:bg-surface-hover"
+            >
+              {gradeOptions.map(grade => (
+                <option key={grade} value={grade}>{grade === 'All' ? 'All Grades' : grade}</option>
+              ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg className="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
 
           {/* Surface Filter */}
-          <select
-            value={filters.surface}
-            onChange={(e) => updateFilter('surface', e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          >
-            {surfaceOptions.map(surface => (
-              <option key={surface} value={surface}>{surface === 'All' ? 'All Surfaces' : surface}</option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={filters.surface}
+              onChange={(e) => updateFilter('surface', e.target.value)}
+              className="appearance-none bg-surface border border-border rounded-xl px-4 py-3 pr-10 focus-modern text-text-primary font-medium cursor-pointer hover:bg-surface-hover"
+            >
+              {surfaceOptions.map(surface => (
+                <option key={surface} value={surface}>{surface === 'All' ? 'All Surfaces' : surface}</option>
+              ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg className="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
 
           {/* Distance Filter */}
-          <select
-            value={filters.distance}
-            onChange={(e) => updateFilter('distance', e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          >
-            {distanceRanges.map(range => (
-              <option key={range} value={range}>{range}</option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={filters.distance}
+              onChange={(e) => updateFilter('distance', e.target.value)}
+              className="appearance-none bg-surface border border-border rounded-xl px-4 py-3 pr-10 focus-modern text-text-primary font-medium cursor-pointer hover:bg-surface-hover"
+            >
+              {distanceRanges.map(range => (
+                <option key={range} value={range}>{range}</option>
+              ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg className="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
 
           {/* Clear Button */}
           <button
             onClick={clearFilters}
-            className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+            className="btn-modern px-6 py-3 text-sm bg-surface-secondary hover:bg-surface-hover text-text-secondary rounded-xl transition-all duration-200 font-medium border border-border-light hover:border-border"
           >
-            Clear All
+            <span className="flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Clear All
+            </span>
           </button>
         </div>
       </div>

@@ -6,9 +6,11 @@ import TimelineList from './components/TimelineList';
 import PlanSidebar from './components/PlanSidebar';
 import RacePreview from './components/RacePreview';
 import { Race, SelectedRace, Filters, PlanState } from './types';
-import { raceData } from './data';
+import { loadRaceData } from './data';
 
 export default function Home() {
+  const [raceData, setRaceData] = useState<Race[]>([]);
+  const [loading, setLoading] = useState(true);
   const [planState, setPlanState] = useState<PlanState>({
     selectedRaces: [],
     filters: {
@@ -23,6 +25,23 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [hoveredRace, setHoveredRace] = useState<Race | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // Load race data from JSON file
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const races = await loadRaceData();
+        setRaceData(races);
+      } catch (error) {
+        console.error('Failed to load race data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
 
   // Load plan from localStorage on mount
   useEffect(() => {
@@ -97,7 +116,12 @@ export default function Home() {
 
   const handleSavePlan = () => {
     // Already auto-saved to localStorage
-    alert('Plan saved successfully!');
+    // Show modern toast notification
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-4 right-4 z-50 bg-success text-white px-6 py-3 rounded-xl shadow-lg';
+    toast.textContent = '✅ Plan saved successfully!';
+    document.body.appendChild(toast);
+    setTimeout(() => document.body.removeChild(toast), 3000);
   };
 
   const handleClearPlan = () => {
@@ -111,7 +135,12 @@ export default function Home() {
     const url = `${window.location.origin}${window.location.pathname}?plan=${encoded}`;
 
     navigator.clipboard.writeText(url).then(() => {
-      alert('Plan URL copied to clipboard!');
+      // Show modern toast notification
+      const toast = document.createElement('div');
+      toast.className = 'fixed top-4 right-4 z-50 bg-accent text-white px-6 py-3 rounded-xl shadow-lg';
+      toast.textContent = '🔗 Plan URL copied to clipboard!';
+      document.body.appendChild(toast);
+      setTimeout(() => document.body.removeChild(toast), 3000);
     }).catch(() => {
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
@@ -132,25 +161,45 @@ export default function Home() {
     setMousePosition({ x: e.clientX, y: e.clientY });
   }, []);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 animate-spin rounded-full border-4 border-border border-t-primary"></div>
+          <h2 className="text-xl font-semibold text-text-primary mb-2">Loading Race Data</h2>
+          <p className="text-text-secondary">Preparing your racing calendar...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-background flex flex-col" onMouseMove={handleMouseMove}>
-      {/* Header */}
-      <header className="bg-surface shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-surface-secondary to-background flex flex-col" onMouseMove={handleMouseMove}>
+      {/* Modern Header */}
+      <header className="glass card-shadow-lg border-0 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/5 to-secondary/10"></div>
+        <div className="relative max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="text-2xl">🏇</div>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg">
+                🏇
+              </div>
               <div>
-                <h1 className="text-2xl font-bold text-text-primary">Umamusume Race Planner</h1>
-                <p className="text-sm text-gray-600">Plan your 3-year racing career</p>
+                <h1 className="text-3xl font-bold text-text-primary bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  Uma Race Planner
+                </h1>
+                <p className="text-text-secondary font-medium">Plan your 3-year racing career with style</p>
               </div>
             </div>
 
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+              className="lg:hidden btn-modern px-6 py-3 gradient-primary text-white rounded-xl hover:shadow-lg transition-all duration-200 font-semibold flex items-center gap-2"
             >
-              Plan ({planState.selectedRaces.length})
+              <div className="w-6 h-6 gradient-secondary rounded-full flex items-center justify-center text-xs font-bold">
+                {planState.selectedRaces.length}
+              </div>
+              Plan
             </button>
           </div>
         </div>
