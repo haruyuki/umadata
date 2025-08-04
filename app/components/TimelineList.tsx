@@ -119,10 +119,10 @@ export default function TimelineList({
 
   const getGradeColor = (grade: string) => {
     switch (grade) {
-      case 'G1': return 'from-amber-400 to-yellow-500 text-white';
-      case 'G2': return 'from-blue-400 to-indigo-500 text-white';
-      case 'G3': return 'from-emerald-400 to-green-500 text-white';
-      case 'OP': return 'from-purple-400 to-violet-500 text-white';
+      case 'G1': return 'bg-[#3785e4] text-white';
+      case 'G2': return 'bg-[#f45a86] text-white';
+      case 'G3': return 'bg-[#58c470] text-white';
+      case 'OP': return 'bg-[#ffad0b] text-white';
       case 'Listed': return 'from-gray-400 to-slate-500 text-white';
       case 'Maiden': return 'from-pink-400 to-rose-500 text-white';
       default: return 'from-gray-400 to-slate-500 text-white';
