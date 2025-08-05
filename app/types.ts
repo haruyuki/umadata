@@ -1,8 +1,13 @@
 export interface Race {
-  id: string;
+  id: number;
   name: string;
+  name_jp: string;
+  name_en: string;
+  name_ko?: string;
+  name_tw?: string;
+  grade: 'G1' | 'G2' | 'G3' | 'OP' | 'Pre-OP' | 'Maiden';
   distance: number;
-  grade: 'G1' | 'G2' | 'G3' | 'OP' | 'Listed' | 'Maiden';
+  direction: 'Right' | 'Left' | 'Right (Outer)' | 'Straight';
   track: 'Turf' | 'Dirt';
   month: number; // 1-12
   half: 'Early' | 'Late';
@@ -10,6 +15,7 @@ export interface Race {
   location?: string;
   notes?: string;
 }
+
 export interface Filters {
   distance: string;
   grade: string;
