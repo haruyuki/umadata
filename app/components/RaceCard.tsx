@@ -14,7 +14,7 @@ const getGradeColor = (grade: string) => {
     case 'Pre-OP':
       return 'bg-[#ffad0b] text-white';
     default:
-      return 'from-gray-500 to-gray-600 text-white';
+      return 'bg-[#94cb08] text-white';
   }
 };
 
