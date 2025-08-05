@@ -33,7 +33,7 @@ export default function RaceCard({ race }: RaceCardProps) {
             {race.grade}
           </span>
           <div className="text-text-primary line-clamp-2 text-base leading-tight font-bold">
-            {race.name}
+            {race.name_en}
           </div>
         </div>
 
