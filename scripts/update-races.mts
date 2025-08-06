@@ -98,7 +98,7 @@ const careerPhaseMap: { [key: number]: string } = {
 
 const fetchDataFromUrl = async (url: string): Promise<any> => {
   try {
-    console.log(`Fetching data from ${url}...`);
+    console.log(`Fetching data from ${url}`);
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -137,8 +137,6 @@ const fetchDataFromUrl = async (url: string): Promise<any> => {
 };
 
 const main = async () => {
-  console.log(`Starting Uma Musume race data conversion script`);
-
   const sourceUrl = 'https://gametora.com/umamusume/races';
   const targetPath = path.resolve('public/umamusume/data/races.json');
 
@@ -222,7 +220,7 @@ const main = async () => {
     fs.writeFileSync(targetPath, JSON.stringify(targetJson, null, 2));
     const fileSizeKB = Math.round(fs.statSync(targetPath).size / 1024);
 
-    console.log(`Successfully saved to ${targetPath} (${fileSizeKB}KB)`);
+    console.log(`Successfully saved to ${targetPath}`);
     console.log(`   - Source races: ${raceData.length}`);
     console.log(`   - Processed races: ${processedRaces}`);
     console.log(`   - Output race entries: ${newRaces.length}`);
