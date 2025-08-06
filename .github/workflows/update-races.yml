@@ -1,0 +1,76 @@
+name: Update Uma Musume Race Data
+
+on:
+  schedule:
+    # Run daily at 3 PM UTC
+    - cron: '0 15 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-races:
+    name: Fetch latest race data from GameTora
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Configure Git user
+        run: |
+          git config --global user.email "noreply@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Run race data update script
+        run: pnpm run update-races
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --exit-code public/umamusume/data/races.json || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        if: steps.git-check.outputs.changes == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'data(races): add race data ${{ steps.date.outputs.date }}'
+          title: '[Automation] Races: Add new races - ${{ steps.date.outputs.date }}'
+          body: |
+            ## Fetch latest GameTora race data
+            
+            ### Changes
+            - Updated `public/umamusume/data/races.json` with latest race information
+            
+            ### Source
+            - Data fetched from: https://gametora.com/umamusume/races
+            - Generated on: ${{ steps.date.outputs.date }}
+          branch: update-races-${{ steps.date.outputs.date }}
+          branch-suffix: timestamp
+          delete-branch: true
+          labels: |
+            automated
+            data-update
+
+      - name: Log completion
+        if: steps.git-check.outputs.changes != 'true'
+        run: echo "No changes detected in race data. Skipping PR creation."
