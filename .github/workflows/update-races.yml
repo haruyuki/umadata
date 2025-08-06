@@ -54,10 +54,10 @@ jobs:
           title: '[Automation] Races: Add new races - ${{ steps.date.outputs.date }}'
           body: |
             ## Fetch latest GameTora race data
-            
+
             ### Changes
             - Updated `public/umamusume/data/races.json` with latest race information
-            
+
             ### Source
             - Data fetched from: https://gametora.com/umamusume/races
             - Generated on: ${{ steps.date.outputs.date }}

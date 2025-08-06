@@ -109,7 +109,9 @@ const fetchDataFromUrl = async (url: string): Promise<any> => {
     const html = await response.text();
 
     // Find the __NEXT_DATA__ script tag
-    const nextDataMatch = html.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/);
+    const nextDataMatch = html.match(
+      /<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/,
+    );
 
     if (!nextDataMatch) {
       console.error(`Could not find __NEXT_DATA__ script tag in the page`);
@@ -225,7 +227,6 @@ const main = async () => {
     console.log(`   - Processed races: ${processedRaces}`);
     console.log(`   - Output race entries: ${newRaces.length}`);
     console.log(`   - Output file size: ${fileSizeKB}KB`);
-
   } catch (error) {
     console.error('Script failed:', error);
     process.exit(1);
