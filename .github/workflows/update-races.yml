@@ -10,6 +10,8 @@ jobs:
   update-races:
     name: Fetch latest race data from GameTora
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
