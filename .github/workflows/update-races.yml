@@ -1,4 +1,4 @@
-name: Update Uma Musume Race Data
+name: Fetch new races
 
 on:
   schedule:
