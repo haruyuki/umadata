@@ -34,11 +34,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Configure Git user
-        run: |
-          git config --global user.email "noreply@github.com"
-          git config --global user.name "GitHub Actions"
-
       - name: Run race data update script
         run: pnpm run update-races
 
@@ -53,9 +48,8 @@ jobs:
 
       - name: Create Pull Request
         if: steps.git-check.outputs.changes == 'true'
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'data(races): add race data ${{ steps.date.outputs.date }}'
           title: '[Automation] Races: Add new races - ${{ steps.date.outputs.date }}'
           body: |
@@ -67,12 +61,9 @@ jobs:
             ### Source
             - Data fetched from: https://gametora.com/umamusume/races
             - Generated on: ${{ steps.date.outputs.date }}
-          branch: update-races-${{ steps.date.outputs.date }}
+          branch: update-races
           branch-suffix: timestamp
           delete-branch: true
-          labels: |
-            automated
-            data-update
 
       - name: Log completion
         if: steps.git-check.outputs.changes != 'true'
