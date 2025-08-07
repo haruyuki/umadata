@@ -3,7 +3,7 @@ import { Race } from './types';
 // Load race data from JSON file
 export const loadRaceData = async (): Promise<Race[]> => {
   try {
-    const response = await fetch('/umamusume/data/races.json');
+    const response = await fetch('/api/races');
     if (!response.ok) {
       console.error('Failed to fetch race data');
       return [];
