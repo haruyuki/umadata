@@ -3,9 +3,9 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { Race } from '@/app/types';
 
-export async function GET(request: Request, { params }: { params: { name: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ raceName: string }> }) {
   try {
-    const raceName = params.name;
+    const { raceName } = await params;
 
     const jsonDirectory = path.join(process.cwd(), 'public', 'umamusume', 'data');
     const fileContents = await fs.readFile(path.join(jsonDirectory, 'races.json'), 'utf8');
